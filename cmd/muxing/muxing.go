@@ -31,13 +31,13 @@ func Start(host string, port int) {
 		Handler(reqCtx, "GET", http.HandlerFunc(getBad)))).Methods("GET")
 
 	mux.Handle("/name/{param}", handlers.LoggingHandler(os.Stdout,
-		Handler(reqCtx, "GET", http.HandlerFunc(getName))))
+		Handler(reqCtx, "GET", http.HandlerFunc(getName)))).Methods("GET")
 
 	mux.Handle("/data", handlers.LoggingHandler(os.Stdout,
 		Handler(reqCtx, "POST", http.HandlerFunc(getData)))).Methods("POST")
 
 	mux.Handle("/headers", handlers.LoggingHandler(os.Stdout,
-		Handler(reqCtx, "POST", http.HandlerFunc(getHeaders))))
+		Handler(reqCtx, "POST", http.HandlerFunc(getHeaders)))).Methods("POST")
 
 	mux.Handle("/get-echo", handlers.LoggingHandler(os.Stdout,
 		Handler(reqCtx, "GET", http.HandlerFunc(getEcho))))
@@ -106,8 +106,8 @@ func getData(w http.ResponseWriter, r *http.Request) {
 }
 
 func getHeaders(w http.ResponseWriter, r *http.Request) {
-	a := r.Header["a"]
-	b := r.Header["b"]
+	a := r.Header[http.CanonicalHeaderKey("a")]
+	b := r.Header[http.CanonicalHeaderKey("b")]
 	ai, err := strconv.Atoi(a[0])
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
